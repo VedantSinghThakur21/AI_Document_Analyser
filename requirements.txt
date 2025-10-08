@@ -1,0 +1,29 @@
+# FastAPI and web framework dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# CORS middleware (included with FastAPI but specified for clarity)
+# fastapi already includes CORSMiddleware
+
+# PDF processing
+pdfplumber==0.10.3
+
+# Machine Learning and NLP
+transformers==4.35.2
+torch==2.1.1
+tokenizers==0.15.0
+
+# Additional dependencies for transformers
+numpy==1.24.4
+requests==2.31.0
+
+# File handling and utilities
+python-multipart==0.0.6
+
+# Optional: For better performance with transformers
+# sentencepiece==0.1.99  # For T5 tokenization
+# accelerate==0.24.1     # For faster model loading
+
+# Development dependencies (optional)
+# pytest==7.4.3
+# httpx==0.25.2  # For testing FastAPI endpoints
