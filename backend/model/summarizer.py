@@ -2,8 +2,10 @@ import logging
 import nltk
 import textstat
 import re
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from collections import Counter
+import string
+from datetime import datetime
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -16,10 +18,12 @@ try:
     nltk.download('averaged_perceptron_tagger', quiet=True)
     nltk.download('maxent_ne_chunker', quiet=True)
     nltk.download('words', quiet=True)
+    nltk.download('vader_lexicon', quiet=True)
     from nltk.tokenize import sent_tokenize, word_tokenize
     from nltk.corpus import stopwords
     from nltk.chunk import ne_chunk
     from nltk.tag import pos_tag
+    from nltk.sentiment.vader import SentimentIntensityAnalyzer
     logger.info("NLTK initialized successfully")
 except Exception as e:
     logger.error(f"Error initializing NLTK: {str(e)}")
@@ -72,42 +76,216 @@ def extract_basic_entities(text: str) -> List[Dict]:
     except:
         return []
 
+def extract_keywords(text: str, top_k: int = 10) -> List[Dict]:
+    """
+    Extract important keywords using TF-IDF-like scoring.
+    """
+    try:
+        words = word_tokenize(text.lower())
+        stop_words = set(stopwords.words('english'))
+        
+        # Filter words: alphabetic, not stopwords, length > 3
+        filtered_words = [word for word in words if 
+                         word.isalpha() and 
+                         word not in stop_words and 
+                         len(word) > 3]
+        
+        # Calculate word frequency
+        word_freq = Counter(filtered_words)
+        
+        # Get top keywords with scores
+        keywords = []
+        total_words = len(filtered_words)
+        for word, freq in word_freq.most_common(top_k):
+            score = freq / total_words
+            keywords.append({
+                "word": word.title(),
+                "frequency": freq,
+                "score": round(score * 100, 2)  # Convert to percentage
+            })
+        
+        return keywords
+    except:
+        return []
+
+def analyze_sentiment(text: str) -> Dict:
+    """
+    Analyze sentiment using VADER sentiment analyzer.
+    """
+    try:
+        analyzer = SentimentIntensityAnalyzer()
+        scores = analyzer.polarity_scores(text)
+        
+        # Determine overall sentiment
+        if scores['compound'] >= 0.05:
+            overall = "Positive"
+            emoji = "😊"
+        elif scores['compound'] <= -0.05:
+            overall = "Negative"
+            emoji = "😟"
+        else:
+            overall = "Neutral"
+            emoji = "😐"
+        
+        return {
+            "overall": overall,
+            "emoji": emoji,
+            "scores": {
+                "positive": round(scores['pos'] * 100, 1),
+                "negative": round(scores['neg'] * 100, 1),
+                "neutral": round(scores['neu'] * 100, 1),
+                "compound": round(scores['compound'], 3)
+            }
+        }
+    except:
+        return {
+            "overall": "Unknown",
+            "emoji": "❓",
+            "scores": {"positive": 0, "negative": 0, "neutral": 100, "compound": 0}
+        }
+
+def classify_document_type(text: str) -> Dict:
+    """
+    Classify document type based on content patterns.
+    """
+    text_lower = text.lower()
+    
+    # Define patterns for different document types
+    patterns = {
+        "Academic Paper": [
+            "abstract", "methodology", "conclusion", "references", 
+            "hypothesis", "literature review", "data analysis"
+        ],
+        "Business Report": [
+            "executive summary", "revenue", "profit", "quarterly", 
+            "stakeholder", "roi", "kpi", "market analysis"
+        ],
+        "Legal Document": [
+            "whereas", "hereby", "agreement", "contract", "clause", 
+            "defendant", "plaintiff", "jurisdiction"
+        ],
+        "Technical Manual": [
+            "installation", "configuration", "troubleshooting", 
+            "specifications", "requirements", "procedure"
+        ],
+        "News Article": [
+            "according to", "reported", "sources", "breaking", 
+            "update", "journalist", "correspondent"
+        ],
+        "Marketing Material": [
+            "discover", "exclusive", "limited time", "call now", 
+            "special offer", "guarantee", "testimonial"
+        ]
+    }
+    
+    scores = {}
+    for doc_type, keywords in patterns.items():
+        matches = sum(1 for keyword in keywords if keyword in text_lower)
+        scores[doc_type] = matches
+    
+    if max(scores.values()) > 0:
+        predicted_type = max(scores, key=scores.get)
+        confidence = scores[predicted_type] / len(patterns[predicted_type]) * 100
+    else:
+        predicted_type = "General Document"
+        confidence = 50
+    
+    return {
+        "type": predicted_type,
+        "confidence": round(confidence, 1),
+        "all_scores": scores
+    }
+
+def get_readability_metrics(text: str) -> Dict:
+    """
+    Get comprehensive readability metrics.
+    """
+    try:
+        return {
+            "flesch_reading_ease": round(textstat.flesch_reading_ease(text), 1),
+            "flesch_kincaid_grade": round(textstat.flesch_kincaid().flesch_kincaid(text), 1),
+            "gunning_fog": round(textstat.gunning_fog(text), 1),
+            "automated_readability": round(textstat.automated_readability_index(text), 1),
+            "coleman_liau": round(textstat.coleman_liau_index(text), 1),
+            "reading_level": textstat.text_standard(text)
+        }
+    except:
+        return {
+            "flesch_reading_ease": 50.0,
+            "flesch_kincaid_grade": 10.0,
+            "gunning_fog": 12.0,
+            "automated_readability": 10.0,
+            "coleman_liau": 10.0,
+            "reading_level": "10th to 12th grade"
+        }
+
 def analyze_text(text: str) -> dict:
     """
-    Analyze text using lightweight NLP tools.
+    Comprehensive text analysis using lightweight NLP tools.
     
     Args:
         text (str): Input text to analyze
         
     Returns:
-        dict: Dictionary containing summary and entities
+        dict: Dictionary containing comprehensive analysis results
     """
     try:
-        # Truncate text to maximum 2000 characters for free tier
-        truncated_text = text[:2000] if len(text) > 2000 else text
+        # Truncate text for processing efficiency (3000 chars for better analysis)
+        truncated_text = text[:3000] if len(text) > 3000 else text
         logger.info(f"Processing text of length: {len(truncated_text)} characters")
         
-        # Generate simple summary
+        # 1. Generate summary
         logger.info("Generating summary...")
-        summary = simple_summarize(truncated_text)
-        logger.info("Summary generated successfully")
+        summary = simple_summarize(truncated_text, max_sentences=4)
         
-        # Extract basic entities
+        # 2. Extract entities
         logger.info("Extracting named entities...")
         entities = extract_basic_entities(truncated_text)
-        logger.info(f"Extracted {len(entities)} entities")
         
-        # Add basic text statistics
+        # 3. Extract keywords
+        logger.info("Extracting keywords...")
+        keywords = extract_keywords(truncated_text, top_k=8)
+        
+        # 4. Analyze sentiment
+        logger.info("Analyzing sentiment...")
+        sentiment = analyze_sentiment(truncated_text)
+        
+        # 5. Classify document type
+        logger.info("Classifying document type...")
+        doc_classification = classify_document_type(truncated_text)
+        
+        # 6. Get readability metrics
+        logger.info("Calculating readability metrics...")
+        readability = get_readability_metrics(truncated_text)
+        
+        # 7. Enhanced statistics
+        sentences = sent_tokenize(truncated_text)
+        words = word_tokenize(truncated_text)
+        
         stats = {
-            "word_count": len(truncated_text.split()),
-            "sentence_count": len(sent_tokenize(truncated_text)),
-            "readability_score": textstat.flesch_reading_ease(truncated_text)
+            "word_count": len(words),
+            "sentence_count": len(sentences),
+            "paragraph_count": len([p for p in truncated_text.split('\n\n') if p.strip()]),
+            "character_count": len(truncated_text),
+            "avg_words_per_sentence": round(len(words) / len(sentences), 1) if sentences else 0,
+            "avg_sentence_length": round(len(truncated_text) / len(sentences), 1) if sentences else 0,
+            "readability_score": readability["flesch_reading_ease"],
+            "reading_level": readability["reading_level"]
         }
+        
+        logger.info("Analysis completed successfully")
         
         return {
             "summary": summary,
             "entities": entities,
-            "statistics": stats
+            "keywords": keywords,
+            "sentiment": sentiment,
+            "document_type": doc_classification,
+            "readability": readability,
+            "statistics": stats,
+            "analysis_timestamp": datetime.now().isoformat(),
+            "text_length": len(text),
+            "processed_length": len(truncated_text)
         }
         
     except Exception as e:
@@ -115,5 +293,11 @@ def analyze_text(text: str) -> dict:
         return {
             "summary": f"Error during analysis: {str(e)}",
             "entities": [],
-            "statistics": {}
+            "keywords": [],
+            "sentiment": {"overall": "Unknown", "emoji": "❓"},
+            "document_type": {"type": "Unknown", "confidence": 0},
+            "readability": {},
+            "statistics": {},
+            "analysis_timestamp": datetime.now().isoformat(),
+            "error": str(e)
         }

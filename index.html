@@ -340,6 +340,146 @@
             margin-top: 4px;
         }
 
+        /* Keywords Grid */
+        .keywords-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .keyword-tag {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .keyword-score {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+        }
+
+        /* Sentiment Analysis */
+        .sentiment-overview {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--secondary-color);
+            border-radius: 12px;
+        }
+
+        .sentiment-emoji {
+            font-size: 3rem;
+        }
+
+        .sentiment-text {
+            flex: 1;
+        }
+
+        .sentiment-label {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .sentiment-bars {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .sentiment-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sentiment-bar-fill {
+            flex: 1;
+            height: 8px;
+            background: var(--secondary-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .sentiment-bar-progress {
+            height: 100%;
+            transition: width 1s ease;
+        }
+
+        .positive-bar { background: var(--success-color); }
+        .negative-bar { background: var(--error-color); }
+        .neutral-bar { background: #6b7280; }
+
+        /* Document Classification */
+        .doc-classification {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--secondary-color);
+            border-radius: 12px;
+        }
+
+        .doc-type {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .doc-confidence {
+            display: inline-block;
+            background: var(--success-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Readability Analysis */
+        .readability-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .readability-metric {
+            padding: 1rem;
+            background: var(--secondary-color);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-score {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .metric-name {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .reading-level {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+
         /* Error Messages */
         .error-message {
             background: var(--error-color);
@@ -418,8 +558,8 @@
                 <h1>Intelligent Document Analysis</h1>
                 <p>Upload your PDF documents and get instant AI-powered analysis with summaries, entity extraction, and readability insights.</p>
                 
-                <!-- HTTPS Setup Banner -->
-                <div id="httpsNotice" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: 2px solid #f59e0b; border-radius: 12px; padding: 2rem; margin: 2rem auto; max-width: 800px; box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3); display: none; text-align: center;">
+                <!-- Old HTTPS Banner - REMOVE -->
+                <div id="oldHttpsNotice" style="display: none; background: linear-gradient(135deg, #f59e0b, #d97706); border: 2px solid #f59e0b; border-radius: 12px; padding: 2rem; margin: 2rem auto; max-width: 800px; box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3); display: none; text-align: center;">
                     <div style="color: white; font-weight: 700; font-size: 1.3rem; margin-bottom: 1rem;">
                         � HTTPS Setup Required
                     </div>
@@ -450,7 +590,7 @@
                     <div class="upload-text">Drop your PDF here or click to browse</div>
                     <div class="upload-subtext">Supports PDF files up to 10MB</div>
                     <input type="file" id="fileInput" class="file-input" accept=".pdf">
-                    <button class="upload-button" id="uploadButton" onclick="document.getElementById('fileInput').click()">
+                    <button class="upload-button" id="uploadButton">
                         <i class="fas fa-upload"></i> Choose File
                     </button>
                 </div>
@@ -463,6 +603,28 @@
                 </div>
 
                 <div class="error-message" id="errorMessage"></div>
+
+                <!-- Subtle HTTPS Setup Notice -->
+                <div id="httpsNotice" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 1rem; margin: 1rem 0; display: none; text-align: center; backdrop-filter: blur(10px);">
+                    <div style="color: var(--text-primary); font-size: 0.9rem; margin-bottom: 0.5rem;">
+                        <i class="fas fa-info-circle" style="color: #f59e0b; margin-right: 8px;"></i>
+                        <strong>HTTPS Version Setup Required</strong>
+                    </div>
+                    <div style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.4; margin-bottom: 1rem;">
+                        To connect securely: <a href="https://cors-anywhere.herokuapp.com/" target="_blank" style="color: var(--primary-color);">Activate CORS Proxy</a> 
+                        → Click "Request temporary access" → Refresh page
+                    </div>
+                    <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                        <button onclick="window.location.href='http://vedantsinghthakur21.github.io/AI_Document_Analyser/'" 
+                                style="background: var(--success-color); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;">
+                            🔓 Use HTTP Version
+                        </button>
+                        <button onclick="window.open('https://cors-anywhere.herokuapp.com/', '_blank')" 
+                                style="background: transparent; color: var(--primary-color); border: 1px solid var(--primary-color); padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;">
+                            🔧 Setup CORS
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div class="results-section fade-in" id="resultsSection">
@@ -490,6 +652,26 @@
                 <div class="result-card">
                     <h3><i class="fas fa-chart-bar"></i> Document Statistics</h3>
                     <div class="stats-grid" id="statsGrid"></div>
+                </div>
+
+                <div class="result-card">
+                    <h3><i class="fas fa-key"></i> Key Topics & Keywords</h3>
+                    <div class="keywords-grid" id="keywordsGrid"></div>
+                </div>
+
+                <div class="result-card">
+                    <h3><i class="fas fa-heart"></i> Sentiment Analysis</h3>
+                    <div class="sentiment-analysis" id="sentimentAnalysis"></div>
+                </div>
+
+                <div class="result-card">
+                    <h3><i class="fas fa-file-medical"></i> Document Classification</h3>
+                    <div class="document-classification" id="documentClassification"></div>
+                </div>
+
+                <div class="result-card">
+                    <h3><i class="fas fa-book-reader"></i> Readability Analysis</h3>
+                    <div class="readability-analysis" id="readabilityAnalysis"></div>
                 </div>
             </div>
         </div>
@@ -573,21 +755,35 @@
             }
         });
 
-        uploadArea.addEventListener('click', () => {
-            fileInput.click();
+        // Handle upload area and button clicks
+        uploadArea.addEventListener('click', (e) => {
+            // Only trigger if not already uploading and not clicking on the button itself
+            if (!isUploading && e.target.id !== 'uploadButton') {
+                fileInput.click();
+            }
         });
 
+        // Handle upload button click specifically
+        uploadButton.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent event bubbling
+            if (!isUploading) {
+                fileInput.click();
+            }
+        });
+
+        // Handle file selection
         fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
+            if (e.target.files.length > 0 && !isUploading) {
                 // Show file selected feedback
                 const fileName = e.target.files[0].name;
                 uploadButton.innerHTML = `<i class="fas fa-file-pdf"></i> ${fileName.length > 20 ? fileName.substring(0, 20) + '...' : fileName}`;
                 uploadButton.style.background = 'var(--success-color)';
                 
-                // Process file after a short delay to show selection feedback
-                setTimeout(() => {
-                    handleFile(e.target.files[0]);
-                }, 200);
+                // Process file immediately - no delay needed
+                handleFile(e.target.files[0]);
+                
+                // Clear the input value to allow re-uploading the same file
+                e.target.value = '';
             }
         });
 
@@ -727,15 +923,37 @@
         function displayResults(data) {
             currentResults = data;
             
-            // Display summary
+            // 1. Display summary
             document.getElementById('summaryText').textContent = data.summary || 'No summary available.';
             
-            // Display entities
+            // 2. Display entities
+            displayEntities(data.entities || []);
+            
+            // 3. Display statistics
+            displayStatistics(data.statistics || {});
+            
+            // 4. Display keywords
+            displayKeywords(data.keywords || []);
+            
+            // 5. Display sentiment analysis
+            displaySentiment(data.sentiment || {});
+            
+            // 6. Display document classification
+            displayDocumentClassification(data.document_type || {});
+            
+            // 7. Display readability analysis
+            displayReadability(data.readability || {});
+            
+            // Show results section
+            document.getElementById('resultsSection').style.display = 'block';
+        }
+
+        function displayEntities(entities) {
             const entitiesGrid = document.getElementById('entitiesGrid');
             entitiesGrid.innerHTML = '';
             
-            if (data.entities && data.entities.length > 0) {
-                data.entities.forEach(entity => {
+            if (entities.length > 0) {
+                entities.forEach(entity => {
                     const entityTag = document.createElement('div');
                     entityTag.className = 'entity-tag';
                     entityTag.innerHTML = `
@@ -747,21 +965,143 @@
             } else {
                 entitiesGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-secondary);">No entities found.</p>';
             }
-            
-            // Display statistics
+        }
+
+        function displayStatistics(statistics) {
             const statsGrid = document.getElementById('statsGrid');
             statsGrid.innerHTML = '';
             
-            if (data.statistics) {
-                const stats = [
-                    { label: 'Word Count', value: data.statistics.word_count || 0 },
-                    { label: 'Sentences', value: data.statistics.sentence_count || 0 },
-                    { label: 'Readability', value: Math.round(data.statistics.readability_score || 0) },
-                    { label: 'Entities', value: data.entities ? data.entities.length : 0 }
-                ];
-                
-                stats.forEach(stat => {
-                    const statItem = document.createElement('div');
+            const stats = [
+                { label: 'Words', value: statistics.word_count || 0, icon: '📝' },
+                { label: 'Sentences', value: statistics.sentence_count || 0, icon: '📄' },
+                { label: 'Paragraphs', value: statistics.paragraph_count || 0, icon: '📑' },
+                { label: 'Characters', value: statistics.character_count || 0, icon: '🔤' },
+                { label: 'Avg Words/Sentence', value: statistics.avg_words_per_sentence || 0, icon: '📊' },
+                { label: 'Reading Score', value: Math.round(statistics.readability_score || 0), icon: '📚' }
+            ];
+            
+            stats.forEach(stat => {
+                const statItem = document.createElement('div');
+                statItem.className = 'stat-item';
+                statItem.innerHTML = `
+                    <div class="stat-number">${stat.icon} ${stat.value}</div>
+                    <div class="stat-label">${stat.label}</div>
+                `;
+                statsGrid.appendChild(statItem);
+            });
+        }
+
+        function displayKeywords(keywords) {
+            const keywordsGrid = document.getElementById('keywordsGrid');
+            keywordsGrid.innerHTML = '';
+            
+            if (keywords.length > 0) {
+                keywords.forEach(keyword => {
+                    const keywordTag = document.createElement('div');
+                    keywordTag.className = 'keyword-tag';
+                    keywordTag.innerHTML = `
+                        <span>${keyword.word}</span>
+                        <span class="keyword-score">${keyword.score}%</span>
+                    `;
+                    keywordsGrid.appendChild(keywordTag);
+                });
+            } else {
+                keywordsGrid.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No keywords found.</p>';
+            }
+        }
+
+        function displaySentiment(sentiment) {
+            const sentimentDiv = document.getElementById('sentimentAnalysis');
+            
+            if (!sentiment.overall) {
+                sentimentDiv.innerHTML = '<p>Sentiment analysis unavailable.</p>';
+                return;
+            }
+            
+            sentimentDiv.innerHTML = `
+                <div class="sentiment-overview">
+                    <div class="sentiment-emoji">${sentiment.emoji}</div>
+                    <div class="sentiment-text">
+                        <div class="sentiment-label">Overall Sentiment: ${sentiment.overall}</div>
+                        <div style="color: var(--text-secondary);">Document tone analysis based on language patterns</div>
+                    </div>
+                </div>
+                <div class="sentiment-bars">
+                    <div class="sentiment-bar">
+                        <span style="width: 80px;">Positive</span>
+                        <div class="sentiment-bar-fill">
+                            <div class="sentiment-bar-progress positive-bar" style="width: ${sentiment.scores?.positive || 0}%"></div>
+                        </div>
+                        <span>${sentiment.scores?.positive || 0}%</span>
+                    </div>
+                    <div class="sentiment-bar">
+                        <span style="width: 80px;">Negative</span>
+                        <div class="sentiment-bar-fill">
+                            <div class="sentiment-bar-progress negative-bar" style="width: ${sentiment.scores?.negative || 0}%"></div>
+                        </div>
+                        <span>${sentiment.scores?.negative || 0}%</span>
+                    </div>
+                    <div class="sentiment-bar">
+                        <span style="width: 80px;">Neutral</span>
+                        <div class="sentiment-bar-fill">
+                            <div class="sentiment-bar-progress neutral-bar" style="width: ${sentiment.scores?.neutral || 0}%"></div>
+                        </div>
+                        <span>${sentiment.scores?.neutral || 0}%</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayDocumentClassification(docType) {
+            const classificationDiv = document.getElementById('documentClassification');
+            
+            if (!docType.type) {
+                classificationDiv.innerHTML = '<p>Document classification unavailable.</p>';
+                return;
+            }
+            
+            classificationDiv.innerHTML = `
+                <div class="doc-classification">
+                    <div class="doc-type">${docType.type}</div>
+                    <div class="doc-confidence">Confidence: ${docType.confidence}%</div>
+                    <div style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                        Classified based on content patterns and language structure
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayReadability(readability) {
+            const readabilityDiv = document.getElementById('readabilityAnalysis');
+            
+            if (!readability.flesch_reading_ease) {
+                readabilityDiv.innerHTML = '<p>Readability analysis unavailable.</p>';
+                return;
+            }
+            
+            readabilityDiv.innerHTML = `
+                <div class="readability-grid">
+                    <div class="readability-metric">
+                        <div class="metric-score">${readability.flesch_reading_ease}</div>
+                        <div class="metric-name">Flesch Reading Ease</div>
+                    </div>
+                    <div class="readability-metric">
+                        <div class="metric-score">${readability.flesch_kincaid_grade}</div>
+                        <div class="metric-name">Grade Level</div>
+                    </div>
+                    <div class="readability-metric">
+                        <div class="metric-score">${readability.gunning_fog}</div>
+                        <div class="metric-name">Gunning Fog Index</div>
+                    </div>
+                    <div class="readability-metric">
+                        <div class="metric-score">${readability.automated_readability}</div>
+                        <div class="metric-name">ARI Score</div>
+                    </div>
+                    <div class="reading-level">
+                        📚 Reading Level: ${readability.reading_level}
+                    </div>
+                </div>
+            `;
                     statItem.className = 'stat-item';
                     statItem.innerHTML = `
                         <div class="stat-number">${stat.value}</div>
