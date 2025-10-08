@@ -418,26 +418,27 @@
                 <h1>Intelligent Document Analysis</h1>
                 <p>Upload your PDF documents and get instant AI-powered analysis with summaries, entity extraction, and readability insights.</p>
                 
-                <!-- Mixed Content Notice for HTTPS -->
-                <div id="httpsNotice" style="background: linear-gradient(135deg, #dc2626, #ef4444); border: 2px solid #dc2626; border-radius: 12px; padding: 2rem; margin: 2rem auto; max-width: 800px; box-shadow: 0 8px 24px rgba(220, 38, 38, 0.3); display: none; text-align: center;">
-                    <div style="color: white; font-weight: 700; font-size: 1.5rem; margin-bottom: 1.5rem;">
-                        🚫 HTTPS Version Cannot Connect to HTTP Backend
+                <!-- HTTPS Setup Banner -->
+                <div id="httpsNotice" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: 2px solid #f59e0b; border-radius: 12px; padding: 2rem; margin: 2rem auto; max-width: 800px; box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3); display: none; text-align: center;">
+                    <div style="color: white; font-weight: 700; font-size: 1.3rem; margin-bottom: 1rem;">
+                        � HTTPS Setup Required
                     </div>
-                    <div style="background: rgba(255, 255, 255, 0.15); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+                    <div style="background: rgba(255, 255, 255, 0.15); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
                         <div style="color: white; font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">
-                            ⚠️ You are on: <code style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px;">https://vedantsinghthakur21.github.io</code>
+                            To connect securely to our backend:
                         </div>
                         <div style="color: #fef3c7; font-size: 1rem; line-height: 1.6;">
-                            Browser security blocks HTTPS → HTTP connections.<br>
-                            <strong>You MUST use the HTTP version for full functionality.</strong>
+                            1. <a href="https://cors-anywhere.herokuapp.com/" target="_blank" style="color: white; text-decoration: underline;">Activate CORS Proxy</a> (click "Request temporary access")<br>
+                            2. Refresh this page and try uploading<br>
+                            <strong>OR use the HTTP version below (always works!)</strong>
                         </div>
                     </div>
                     <button onclick="window.location.href='http://vedantsinghthakur21.github.io/AI_Document_Analyser/'" style="background: #059669; color: white; border: none; padding: 16px 32px; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4); transition: all 0.3s; margin: 8px;">
-                        🔓 Switch to HTTP Version (Working)
+                        🔓 Switch to HTTP Version (Always Works!)
                     </button>
                     <div style="margin-top: 1rem;">
-                        <button onclick="allowMixedContent()" style="background: transparent; color: white; border: 2px solid white; padding: 12px 24px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; margin: 8px;">
-                            🛡️ Or Allow Mixed Content in Browser
+                        <button onclick="window.open('https://cors-anywhere.herokuapp.com/', '_blank')" style="background: transparent; color: white; border: 2px solid white; padding: 12px 24px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; margin: 8px;">
+                            � Activate CORS Proxy
                         </button>
                     </div>
                 </div>
@@ -501,6 +502,20 @@
         const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/http://13.232.16.226:8000';
         const API_BASE_URL = IS_HTTPS ? CORS_PROXY : DIRECT_API;
         let currentResults = null;
+        
+        // Check CORS proxy availability (HTTPS only)
+        let corsProxyReady = false;
+        if (IS_HTTPS) {
+            fetch('https://cors-anywhere.herokuapp.com/')
+                .then(response => response.text())
+                .then(text => {
+                    corsProxyReady = !text.includes('demo of CORS Anywhere should only be used for development');
+                    if (!corsProxyReady) {
+                        console.log('CORS proxy requires activation at https://cors-anywhere.herokuapp.com/');
+                    }
+                })
+                .catch(() => corsProxyReady = false);
+        }
 
         // Theme Management
         function toggleTheme() {
@@ -643,7 +658,14 @@
                 hideProgress();
                 
                 if (IS_HTTPS) {
-                    showError('🔒 HTTPS Connection Issue: Click the shield icon 🛡️ in your address bar and select "Load unsafe scripts" to enable connection to the backend server. Or use: <a href="http://vedantsinghthakur21.github.io/AI_Document_Analyser/" style="color: #3b82f6; text-decoration: underline;">HTTP Version</a>');
+                    if (!corsProxyReady) {
+                        showError(`🔒 HTTPS Setup Required: 
+                            <br>1. <a href="https://cors-anywhere.herokuapp.com/" target="_blank" style="color: #3b82f6;">Activate CORS Proxy</a> (click "Request temporary access")
+                            <br>2. Then reload this page and try again
+                            <br>3. Or use: <a href="http://vedantsinghthakur21.github.io/AI_Document_Analyser/" style="color: #3b82f6;">HTTP Version</a>`);
+                    } else {
+                        showError('🔒 HTTPS Connection Issue: Click the shield icon 🛡️ in your address bar and select "Load unsafe scripts" to enable connection to the backend server. Or use: <a href="http://vedantsinghthakur21.github.io/AI_Document_Analyser/" style="color: #3b82f6; text-decoration: underline;">HTTP Version</a>');
+                    }
                 } else {
                     showError('❌ Cannot connect to backend server. Please ensure your EC2 instance is running and accessible.');
                 }
@@ -765,13 +787,19 @@
             initTheme();
             
             // Show HTTPS notice if on GitHub Pages HTTPS
-            if (window.location.protocol === 'https:' && window.location.hostname.includes('github.io')) {
+            if (IS_HTTPS && window.location.hostname.includes('github.io')) {
                 document.getElementById('httpsNotice').style.display = 'block';
-                // Disable upload functionality on HTTPS version
-                document.getElementById('uploadButton').disabled = true;
-                document.getElementById('uploadButton').innerHTML = '🔒 Use HTTP Version to Upload';
-                document.getElementById('uploadArea').style.opacity = '0.5';
-                document.getElementById('uploadArea').style.cursor = 'not-allowed';
+                
+                // Check CORS proxy availability after a brief delay
+                setTimeout(() => {
+                    if (!corsProxyReady) {
+                        document.getElementById('uploadButton').disabled = true;
+                        document.getElementById('uploadButton').innerHTML = '� Setup Required - See Banner Above';
+                        document.getElementById('uploadArea').style.opacity = '0.6';
+                    } else {
+                        document.getElementById('uploadButton').innerHTML = '📤 Upload Document (HTTPS Ready)';
+                    }
+                }, 2000);
             } else {
                 // Test API connection only on HTTP version
                 fetch(`${API_BASE_URL}/`)
