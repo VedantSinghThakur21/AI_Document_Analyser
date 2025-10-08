@@ -419,14 +419,23 @@
                 <p>Upload your PDF documents and get instant AI-powered analysis with summaries, entity extraction, and readability insights.</p>
                 
                 <!-- Mixed Content Notice for HTTPS -->
-                <div id="httpsNotice" style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 1rem; margin: 1rem auto; max-width: 600px; display: none;">
-                    <div style="display: flex; align-items: center; gap: 8px; color: #92400e; font-weight: 500;">
-                        <i class="fas fa-info-circle"></i>
-                        <span>HTTPS Security Notice</span>
+                <div id="httpsNotice" style="background: linear-gradient(135deg, #fef3c7, #fed7aa); border: 2px solid #f59e0b; border-radius: 12px; padding: 1.5rem; margin: 2rem auto; max-width: 700px; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15); display: none;">
+                    <div style="display: flex; align-items: center; gap: 12px; color: #92400e; font-weight: 600; font-size: 1.1rem; margin-bottom: 1rem;">
+                        <i class="fas fa-shield-alt" style="font-size: 1.5rem;"></i>
+                        <span>🔒 Security Notice - Action Required</span>
                     </div>
-                    <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: #78350f;">
-                        For full functionality, visit the <a href="http://vedantsinghthakur21.github.io/AI_Document_Analyser/" target="_blank" style="color: #92400e; text-decoration: underline;">HTTP version</a> or allow insecure content in your browser.
+                    <p style="margin: 0 0 1rem 0; font-size: 1rem; color: #78350f; line-height: 1.6;">
+                        <strong>GitHub Pages uses HTTPS, but our EC2 backend uses HTTP.</strong> To use the document analyzer:
                     </p>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <a href="http://vedantsinghthakur21.github.io/AI_Document_Analyser/" target="_blank" style="background: #f59e0b; color: white; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 8px; transition: all 0.3s;">
+                            <i class="fas fa-external-link-alt"></i>
+                            Use HTTP Version (Recommended)
+                        </a>
+                        <div style="color: #78350f; font-size: 0.9rem; padding: 8px; background: rgba(120, 53, 15, 0.1); border-radius: 6px;">
+                            <strong>Or:</strong> Click shield icon in address bar → "Load unsafe scripts"
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -482,9 +491,8 @@
     </main>
 
     <script>
-        // API configuration - GitHub Pages requires HTTPS
-        const API_BASE_URL = 'https://13.232.16.226:8000';  // Will try HTTPS first
-        const FALLBACK_API_URL = 'http://13.232.16.226:8000'; // Fallback for local testing
+        // API configuration - EC2 server runs on HTTP
+        const API_BASE_URL = 'http://13.232.16.226:8000';  // EC2 backend HTTP endpoint
         let currentResults = null;
 
         // Theme Management
@@ -578,18 +586,11 @@
                 // Simulate progress
                 updateProgress(20, 'Uploading file...');
                 
-                // Try API connection with fallback for mixed content issues
-                let response;
-                try {
-                    response = await fetch(`${API_BASE_URL}/analyze`, {
-                        method: 'POST',
-                        body: formData
-                    });
-                } catch (mixedContentError) {
-                    console.log('HTTPS failed, trying alternative approach...');
-                    // Show instruction to user for mixed content
-                    throw new Error('Mixed Content Error: Please allow insecure content in your browser or use HTTP version');
-                }
+                // Connect to EC2 backend
+                const response = await fetch(`${API_BASE_URL}/analyze`, {
+                    method: 'POST',
+                    body: formData
+                });
 
                 updateProgress(60, 'Processing document...');
 
@@ -610,11 +611,7 @@
                 console.error('Upload error:', error);
                 hideProgress();
                 
-                if (error.message.includes('Mixed Content')) {
-                    showError('🔒 Security Notice: Your browser blocked the connection. Please visit the HTTP version at: http://vedantsinghthakur21.github.io/AI_Document_Analyser/ or enable "Allow insecure content" in your browser settings.');
-                } else {
-                    showError('Failed to analyze document. Please try again or check if the server is running.');
-                }
+                showError('🔒 Mixed Content Error: Please use the HTTP version at http://vedantsinghthakur21.github.io/AI_Document_Analyser/ or allow insecure content in your browser settings to connect to the EC2 server.');
             }
         }
 
