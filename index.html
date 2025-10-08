@@ -502,6 +502,7 @@
         const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/http://13.232.16.226:8000';
         const API_BASE_URL = IS_HTTPS ? CORS_PROXY : DIRECT_API;
         let currentResults = null;
+        let isUploading = false; // Prevent double uploads
         
         // Check CORS proxy availability (HTTPS only)
         let corsProxyReady = false;
@@ -578,11 +579,25 @@
 
         fileInput.addEventListener('change', (e) => {
             if (e.target.files.length > 0) {
-                handleFile(e.target.files[0]);
+                // Show file selected feedback
+                const fileName = e.target.files[0].name;
+                uploadButton.innerHTML = `<i class="fas fa-file-pdf"></i> ${fileName.length > 20 ? fileName.substring(0, 20) + '...' : fileName}`;
+                uploadButton.style.background = 'var(--success-color)';
+                
+                // Process file after a short delay to show selection feedback
+                setTimeout(() => {
+                    handleFile(e.target.files[0]);
+                }, 200);
             }
         });
 
         function handleFile(file) {
+            // Prevent double uploads
+            if (isUploading) {
+                console.log('Upload already in progress...');
+                return;
+            }
+
             // Validate file
             if (file.type !== 'application/pdf') {
                 showError('Please upload a PDF file.');
@@ -598,6 +613,8 @@
         }
 
         async function uploadFile(file) {
+            // Set upload state
+            isUploading = true;
             hideError();
             showProgress();
             
@@ -651,11 +668,13 @@
                 setTimeout(() => {
                     hideProgress();
                     displayResults(result.data);
+                    isUploading = false; // Reset upload state
                 }, 1000);
 
             } catch (error) {
                 console.error('Upload error:', error);
                 hideProgress();
+                isUploading = false; // Reset upload state on error
                 
                 if (IS_HTTPS) {
                     if (!corsProxyReady) {
@@ -676,12 +695,19 @@
             progressContainer.style.display = 'block';
             uploadButton.disabled = true;
             uploadButton.innerHTML = '<div class="loading"></div> Processing...';
+            // Disable drag and drop during upload
+            uploadArea.style.pointerEvents = 'none';
+            uploadArea.style.opacity = '0.6';
         }
 
         function hideProgress() {
             progressContainer.style.display = 'none';
             uploadButton.disabled = false;
             uploadButton.innerHTML = '<i class="fas fa-upload"></i> Choose File';
+            uploadButton.style.background = ''; // Reset button color
+            // Re-enable drag and drop
+            uploadArea.style.pointerEvents = 'auto';
+            uploadArea.style.opacity = '1';
         }
 
         function updateProgress(percent, text) {
