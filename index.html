@@ -495,8 +495,11 @@
     </main>
 
     <script>
-        // API configuration - EC2 server runs on HTTP
-        const API_BASE_URL = 'http://13.232.16.226:8000';  // EC2 backend HTTP endpoint
+        // API configuration with CORS proxy for HTTPS compatibility
+        const IS_HTTPS = window.location.protocol === 'https:';
+        const DIRECT_API = 'http://13.232.16.226:8000';
+        const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/http://13.232.16.226:8000';
+        const API_BASE_URL = IS_HTTPS ? CORS_PROXY : DIRECT_API;
         let currentResults = null;
 
         // Theme Management
@@ -590,11 +593,35 @@
                 // Simulate progress
                 updateProgress(20, 'Uploading file...');
                 
-                // Connect to EC2 backend
-                const response = await fetch(`${API_BASE_URL}/analyze`, {
-                    method: 'POST',
-                    body: formData
-                });
+                let response;
+                if (IS_HTTPS) {
+                    // For HTTPS, try CORS proxy first
+                    try {
+                        updateProgress(30, 'Connecting via secure proxy...');
+                        response = await fetch(`${API_BASE_URL}/analyze`, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+                    } catch (corsError) {
+                        console.log('CORS proxy failed, trying direct connection...');
+                        updateProgress(40, 'Retrying direct connection...');
+                        // Fallback to direct connection (will show mixed content warning)
+                        response = await fetch(`${DIRECT_API}/analyze`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                    }
+                } else {
+                    // Direct connection for HTTP
+                    updateProgress(30, 'Connecting to server...');
+                    response = await fetch(`${API_BASE_URL}/analyze`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                }
 
                 updateProgress(60, 'Processing document...');
 
@@ -615,7 +642,11 @@
                 console.error('Upload error:', error);
                 hideProgress();
                 
-                showError('🔒 Mixed Content Error: Please use the HTTP version at http://vedantsinghthakur21.github.io/AI_Document_Analyser/ or allow insecure content in your browser settings to connect to the EC2 server.');
+                if (IS_HTTPS) {
+                    showError('🔒 HTTPS Connection Issue: Click the shield icon 🛡️ in your address bar and select "Load unsafe scripts" to enable connection to the backend server. Or use: <a href="http://vedantsinghthakur21.github.io/AI_Document_Analyser/" style="color: #3b82f6; text-decoration: underline;">HTTP Version</a>');
+                } else {
+                    showError('❌ Cannot connect to backend server. Please ensure your EC2 instance is running and accessible.');
+                }
             }
         }
 
