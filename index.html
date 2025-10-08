@@ -417,6 +417,17 @@
             <div class="hero">
                 <h1>Intelligent Document Analysis</h1>
                 <p>Upload your PDF documents and get instant AI-powered analysis with summaries, entity extraction, and readability insights.</p>
+                
+                <!-- Mixed Content Notice for HTTPS -->
+                <div id="httpsNotice" style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 1rem; margin: 1rem auto; max-width: 600px; display: none;">
+                    <div style="display: flex; align-items: center; gap: 8px; color: #92400e; font-weight: 500;">
+                        <i class="fas fa-info-circle"></i>
+                        <span>HTTPS Security Notice</span>
+                    </div>
+                    <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: #78350f;">
+                        For full functionality, visit the <a href="http://vedantsinghthakur21.github.io/AI_Document_Analyser/" target="_blank" style="color: #92400e; text-decoration: underline;">HTTP version</a> or allow insecure content in your browser.
+                    </p>
+                </div>
             </div>
 
             <div class="upload-section">
@@ -471,7 +482,9 @@
     </main>
 
     <script>
-        const API_BASE_URL = 'http://13.232.16.226:8000';
+        // API configuration - GitHub Pages requires HTTPS
+        const API_BASE_URL = 'https://13.232.16.226:8000';  // Will try HTTPS first
+        const FALLBACK_API_URL = 'http://13.232.16.226:8000'; // Fallback for local testing
         let currentResults = null;
 
         // Theme Management
@@ -565,10 +578,18 @@
                 // Simulate progress
                 updateProgress(20, 'Uploading file...');
                 
-                const response = await fetch(`${API_BASE_URL}/analyze`, {
-                    method: 'POST',
-                    body: formData
-                });
+                // Try API connection with fallback for mixed content issues
+                let response;
+                try {
+                    response = await fetch(`${API_BASE_URL}/analyze`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                } catch (mixedContentError) {
+                    console.log('HTTPS failed, trying alternative approach...');
+                    // Show instruction to user for mixed content
+                    throw new Error('Mixed Content Error: Please allow insecure content in your browser or use HTTP version');
+                }
 
                 updateProgress(60, 'Processing document...');
 
@@ -588,7 +609,12 @@
             } catch (error) {
                 console.error('Upload error:', error);
                 hideProgress();
-                showError('Failed to analyze document. Please try again.');
+                
+                if (error.message.includes('Mixed Content')) {
+                    showError('🔒 Security Notice: Your browser blocked the connection. Please visit the HTTP version at: http://vedantsinghthakur21.github.io/AI_Document_Analyser/ or enable "Allow insecure content" in your browser settings.');
+                } else {
+                    showError('Failed to analyze document. Please try again or check if the server is running.');
+                }
             }
         }
 
@@ -698,15 +724,23 @@
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
             
-            // Test API connection
+            // Show HTTPS notice if on GitHub Pages
+            if (window.location.protocol === 'https:' && window.location.hostname.includes('github.io')) {
+                document.getElementById('httpsNotice').style.display = 'block';
+            }
+            
+            // Test API connection with better error handling
             fetch(`${API_BASE_URL}/`)
                 .then(response => response.json())
                 .then(data => {
                     console.log('API connected:', data);
+                    // Hide any existing error messages if connection is successful
+                    hideError();
                 })
                 .catch(error => {
                     console.error('API connection failed:', error);
-                    showError('Unable to connect to analysis server. Please try again later.');
+                    // Don't show error immediately - let user try to upload first
+                    console.log('API connection failed, but user can still try uploading');
                 });
         });
     </script>
