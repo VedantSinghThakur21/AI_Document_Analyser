@@ -340,32 +340,250 @@
             margin-top: 4px;
         }
 
-        /* Simple Analysis */
-        .simple-analysis {
+        /* Named Entities */
+        .entities-grid {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
-        .analysis-item {
+        .entity-tag {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 8px 14px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            background: var(--secondary-color);
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .entity-type {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .entity-score {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 2px 6px;
             border-radius: 8px;
+            font-size: 0.7rem;
+        }
+
+        /* Keywords Grid */
+        .keywords-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .keyword-tag {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+        }
+
+        .keyword-frequency {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+        }
+
+        .keyword-score {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+        }
+
+        /* Sentiment Analysis */
+        .sentiment-overview {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1.2rem;
+            background: var(--secondary-color);
+            border-radius: 12px;
             border-left: 4px solid var(--primary-color);
         }
 
-        .analysis-label {
+        .sentiment-emoji {
+            font-size: 3rem;
+        }
+
+        .sentiment-details {
+            flex: 1;
+        }
+
+        .sentiment-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .sentiment-compound {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .sentiment-breakdown {
+            display: grid;
+            gap: 0.8rem;
+        }
+
+        .sentiment-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .sentiment-bar-label {
+            min-width: 80px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .sentiment-bar-container {
+            flex: 1;
+            height: 12px;
+            background: var(--secondary-color);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .sentiment-bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 1s ease;
+        }
+
+        .sentiment-bar-fill.positive { background: var(--success-color); }
+        .sentiment-bar-fill.negative { background: var(--error-color); }
+        .sentiment-bar-fill.neutral { background: #6b7280; }
+
+        .sentiment-bar-value {
+            min-width: 45px;
+            text-align: right;
             font-weight: 600;
             color: var(--text-color);
         }
 
-        .analysis-value {
+        /* Document Classification */
+        .doc-classification-main {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--secondary-color);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .doc-type-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .doc-confidence {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .doc-scores {
+            background: var(--secondary-color);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .doc-scores h4 {
+            margin-bottom: 0.8rem;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .score-item:last-child {
+            border-bottom: none;
+        }
+
+        .score-type {
+            color: var(--text-color);
+            font-size: 0.85rem;
+        }
+
+        .score-value {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* Readability Analysis */
+        .readability-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .readability-metric {
+            text-align: center;
+            padding: 1rem;
+            background: var(--secondary-color);
+            border-radius: 10px;
+            border-top: 3px solid var(--primary-color);
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
             font-weight: 700;
             color: var(--primary-color);
-            font-size: 16px;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .reading-level-summary {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem;
+            background: var(--secondary-color);
+            border-radius: 8px;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .reading-level-summary i {
+            color: var(--success-color);
+            font-size: 1.2rem;
         }
 
 
@@ -500,6 +718,78 @@
             }
         }
 
+        /* Responsive Design Improvements */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            
+            .entities-grid, .keywords-grid {
+                flex-direction: column;
+            }
+            
+            .entity-tag, .keyword-tag {
+                justify-content: space-between;
+            }
+            
+            .sentiment-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+            
+            .readability-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .readability-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .doc-type-badge {
+                font-size: 1rem;
+                padding: 10px 20px;
+            }
+        }
+
+        /* Enhanced animations */
+        .entity-tag, .keyword-tag {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .entity-tag:hover, .keyword-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .result-card {
+            animation: slideUp 0.6s ease forwards;
+        }
+
+        .result-card:nth-child(1) { animation-delay: 0.1s; }
+        .result-card:nth-child(2) { animation-delay: 0.2s; }
+        .result-card:nth-child(3) { animation-delay: 0.3s; }
+        .result-card:nth-child(4) { animation-delay: 0.4s; }
+        .result-card:nth-child(5) { animation-delay: 0.5s; }
+        .result-card:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* Animations */
         .fade-in {
             animation: fadeIn 0.5s ease-in;
@@ -624,17 +914,28 @@
                 </div>
 
                 <div class="result-card">
-                    <h3><i class="fas fa-chart-line"></i> Text Analysis</h3>
-                    <div class="simple-analysis" id="textAnalysis">
-                        <div class="analysis-item">
-                            <span class="analysis-label">Reading Level:</span>
-                            <span class="analysis-value" id="readingLevel">Calculating...</span>
-                        </div>
-                        <div class="analysis-item">
-                            <span class="analysis-label">Document Type:</span>
-                            <span class="analysis-value" id="documentType">Analyzing...</span>
-                        </div>
-                    </div>
+                    <h3><i class="fas fa-users"></i> Named Entities</h3>
+                    <div class="entities-grid" id="entitiesGrid"></div>
+                </div>
+
+                <div class="result-card">
+                    <h3><i class="fas fa-key"></i> Key Topics & Keywords</h3>
+                    <div class="keywords-grid" id="keywordsGrid"></div>
+                </div>
+
+                <div class="result-card">
+                    <h3><i class="fas fa-heart"></i> Sentiment Analysis</h3>
+                    <div class="sentiment-analysis" id="sentimentAnalysis"></div>
+                </div>
+
+                <div class="result-card">
+                    <h3><i class="fas fa-tag"></i> Document Classification</h3>
+                    <div class="document-classification" id="documentClassification"></div>
+                </div>
+
+                <div class="result-card">
+                    <h3><i class="fas fa-book-reader"></i> Readability Analysis</h3>
+                    <div class="readability-analysis" id="readabilityAnalysis"></div>
                 </div>
             </div>
         </div>
@@ -899,24 +1200,7 @@
             document.getElementById('resultsSection').style.display = 'block';
         }
 
-        function displayEntities(entities) {
-            const entitiesGrid = document.getElementById('entitiesGrid');
-            entitiesGrid.innerHTML = '';
-            
-            if (entities.length > 0) {
-                entities.forEach(entity => {
-                    const entityTag = document.createElement('div');
-                    entityTag.className = 'entity-tag';
-                    entityTag.innerHTML = `
-                        <span>${entity.word}</span>
-                        <span class="entity-score">${(entity.score * 100).toFixed(0)}%</span>
-                    `;
-                    entitiesGrid.appendChild(entityTag);
-                });
-            } else {
-                entitiesGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-secondary);">No entities found.</p>';
-            }
-        }
+
 
         function displayStatistics(statistics) {
             const statsGrid = document.getElementById('statsGrid');
@@ -943,21 +1227,161 @@
         }
 
         function displayTextAnalysis(data) {
-            // Simple reading level based on statistics
-            const stats = data.statistics || {};
-            const avgWordsPerSentence = stats.avg_words_per_sentence || 0;
-            let readingLevel = "Basic";
-            if (avgWordsPerSentence > 20) readingLevel = "Advanced";
-            else if (avgWordsPerSentence > 15) readingLevel = "Intermediate";
+            // Display all comprehensive analysis sections
+            displayEntities(data.entities || []);
+            displayKeywords(data.keywords || []);
+            displaySentiment(data.sentiment || {});
+            displayDocumentClassification(data.document_type || {});
+            displayReadability(data.readability || {});
+        }
+
+        function displayEntities(entities) {
+            const entitiesGrid = document.getElementById('entitiesGrid');
+            entitiesGrid.innerHTML = '';
             
-            // Simple document type detection
-            let docType = "Text Document";
-            if (data.summary && data.summary.toLowerCase().includes('research')) docType = "Research Paper";
-            else if (data.summary && data.summary.toLowerCase().includes('report')) docType = "Report";
-            else if (data.summary && data.summary.toLowerCase().includes('article')) docType = "Article";
+            if (entities && entities.length > 0) {
+                entities.forEach(entity => {
+                    const entityTag = document.createElement('div');
+                    entityTag.className = 'entity-tag';
+                    entityTag.innerHTML = `
+                        <span class="entity-text">${entity.word}</span>
+                        <span class="entity-type">${entity.entity_group}</span>
+                        <span class="entity-score">${Math.round(entity.score * 100)}%</span>
+                    `;
+                    entitiesGrid.appendChild(entityTag);
+                });
+            } else {
+                entitiesGrid.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">No named entities detected in this document.</p>';
+            }
+        }
+
+        function displayKeywords(keywords) {
+            const keywordsGrid = document.getElementById('keywordsGrid');
+            keywordsGrid.innerHTML = '';
             
-            document.getElementById('readingLevel').textContent = readingLevel;
-            document.getElementById('documentType').textContent = docType;
+            if (keywords && keywords.length > 0) {
+                keywords.forEach(keyword => {
+                    const keywordTag = document.createElement('div');
+                    keywordTag.className = 'keyword-tag';
+                    keywordTag.innerHTML = `
+                        <span class="keyword-text">${keyword.word}</span>
+                        <span class="keyword-frequency">×${keyword.frequency}</span>
+                        <span class="keyword-score">${keyword.score}%</span>
+                    `;
+                    keywordsGrid.appendChild(keywordTag);
+                });
+            } else {
+                keywordsGrid.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">No significant keywords found.</p>';
+            }
+        }
+
+        function displaySentiment(sentiment) {
+            const sentimentDiv = document.getElementById('sentimentAnalysis');
+            
+            if (!sentiment || !sentiment.overall) {
+                sentimentDiv.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">Sentiment analysis unavailable.</p>';
+                return;
+            }
+            
+            const scores = sentiment.scores || {};
+            sentimentDiv.innerHTML = `
+                <div class="sentiment-overview">
+                    <div class="sentiment-emoji">${sentiment.emoji || '😐'}</div>
+                    <div class="sentiment-details">
+                        <div class="sentiment-label">Overall: <strong>${sentiment.overall}</strong></div>
+                        <div class="sentiment-compound">Compound Score: ${scores.compound || 0}</div>
+                    </div>
+                </div>
+                <div class="sentiment-breakdown">
+                    <div class="sentiment-bar">
+                        <div class="sentiment-bar-label">Positive</div>
+                        <div class="sentiment-bar-container">
+                            <div class="sentiment-bar-fill positive" style="width: ${scores.positive || 0}%"></div>
+                        </div>
+                        <div class="sentiment-bar-value">${scores.positive || 0}%</div>
+                    </div>
+                    <div class="sentiment-bar">
+                        <div class="sentiment-bar-label">Negative</div>
+                        <div class="sentiment-bar-container">
+                            <div class="sentiment-bar-fill negative" style="width: ${scores.negative || 0}%"></div>
+                        </div>
+                        <div class="sentiment-bar-value">${scores.negative || 0}%</div>
+                    </div>
+                    <div class="sentiment-bar">
+                        <div class="sentiment-bar-label">Neutral</div>
+                        <div class="sentiment-bar-container">
+                            <div class="sentiment-bar-fill neutral" style="width: ${scores.neutral || 0}%"></div>
+                        </div>
+                        <div class="sentiment-bar-value">${scores.neutral || 0}%</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayDocumentClassification(docType) {
+            const classificationDiv = document.getElementById('documentClassification');
+            
+            if (!docType || !docType.type) {
+                classificationDiv.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">Document classification unavailable.</p>';
+                return;
+            }
+            
+            classificationDiv.innerHTML = `
+                <div class="doc-classification-main">
+                    <div class="doc-type-badge">
+                        <i class="fas fa-tag"></i>
+                        ${docType.type}
+                    </div>
+                    <div class="doc-confidence">
+                        Confidence: <strong>${docType.confidence}%</strong>
+                    </div>
+                </div>
+                ${docType.all_scores ? `
+                    <div class="doc-scores">
+                        <h4>Classification Scores:</h4>
+                        ${Object.entries(docType.all_scores).map(([type, score]) => `
+                            <div class="score-item">
+                                <span class="score-type">${type}</span>
+                                <span class="score-value">${score} matches</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            `;
+        }
+
+        function displayReadability(readability) {
+            const readabilityDiv = document.getElementById('readabilityAnalysis');
+            
+            if (!readability || Object.keys(readability).length === 0) {
+                readabilityDiv.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">Readability analysis unavailable.</p>';
+                return;
+            }
+            
+            readabilityDiv.innerHTML = `
+                <div class="readability-grid">
+                    <div class="readability-metric">
+                        <div class="metric-value">${readability.flesch_reading_ease || 0}</div>
+                        <div class="metric-label">Flesch Reading Ease</div>
+                    </div>
+                    <div class="readability-metric">
+                        <div class="metric-value">${readability.flesch_kincaid_grade || 0}</div>
+                        <div class="metric-label">Grade Level</div>
+                    </div>
+                    <div class="readability-metric">
+                        <div class="metric-value">${readability.gunning_fog || 0}</div>
+                        <div class="metric-label">Gunning Fog</div>
+                    </div>
+                    <div class="readability-metric">
+                        <div class="metric-value">${readability.automated_readability || 0}</div>
+                        <div class="metric-label">ARI Score</div>
+                    </div>
+                </div>
+                <div class="reading-level-summary">
+                    <i class="fas fa-graduation-cap"></i>
+                    <strong>Reading Level:</strong> ${readability.reading_level || 'Unknown'}
+                </div>
+            `;
         }
 
 
