@@ -1102,18 +1102,6 @@
                     </div>
                 </div>
             `;
-                    statItem.className = 'stat-item';
-                    statItem.innerHTML = `
-                        <div class="stat-number">${stat.value}</div>
-                        <div class="stat-label">${stat.label}</div>
-                    `;
-                    statsGrid.appendChild(statItem);
-                });
-            }
-            
-            // Show results section
-            resultsSection.style.display = 'block';
-            resultsSection.scrollIntoView({ behavior: 'smooth' });
         }
 
         function downloadResults() {
