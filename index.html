@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Document Analyzer | Advanced PDF Analysis</title>
+    <title>DocAnalyzer Pro | PDF Document Analysis</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -340,61 +340,35 @@
             margin-top: 4px;
         }
 
-        /* Keywords Grid */
-        .keywords-grid {
+        /* Simple Analysis */
+        .simple-analysis {
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        .keyword-tag {
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
+        .analysis-item {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 6px;
-        }
-
-        .keyword-score {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-size: 0.75rem;
-        }
-
-        /* Sentiment Analysis */
-        .sentiment-overview {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            padding: 1rem;
+            padding: 15px;
             background: var(--secondary-color);
-            border-radius: 12px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
         }
 
-        .sentiment-emoji {
-            font-size: 3rem;
-        }
-
-        .sentiment-text {
-            flex: 1;
-        }
-
-        .sentiment-label {
-            font-size: 1.2rem;
+        .analysis-label {
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            color: var(--text-color);
         }
 
-        .sentiment-bars {
-            display: grid;
-            gap: 0.5rem;
+        .analysis-value {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 16px;
         }
+
+
 
         .sentiment-bar {
             display: flex;
@@ -542,8 +516,8 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <i class="fas fa-brain"></i>
-                    AI Document Analyzer
+                    <i class="fas fa-file-alt"></i>
+                    DocAnalyzer Pro
                 </div>
                 <button class="theme-toggle" onclick="toggleTheme()">
                     <i class="fas fa-moon" id="theme-icon"></i>
@@ -555,8 +529,8 @@
     <main class="main">
         <div class="container">
             <div class="hero">
-                <h1>Intelligent Document Analysis</h1>
-                <p>Upload your PDF documents and get instant AI-powered analysis with summaries, entity extraction, and readability insights.</p>
+                <h1>PDF Document Analyzer</h1>
+                <p>Extract key insights from your PDF documents. Get summaries, statistics, and readability analysis in seconds.</p>
                 
                 <!-- Old HTTPS Banner - REMOVE -->
                 <div id="oldHttpsNotice" style="display: none; background: linear-gradient(135deg, #f59e0b, #d97706); border: 2px solid #f59e0b; border-radius: 12px; padding: 2rem; margin: 2rem auto; max-width: 800px; box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3); display: none; text-align: center;">
@@ -587,8 +561,8 @@
             <div class="upload-section">
                 <div class="upload-area" id="uploadArea">
                     <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                    <div class="upload-text">Drop your PDF here or click to browse</div>
-                    <div class="upload-subtext">Supports PDF files up to 10MB</div>
+                    <div class="upload-text">Drag & drop your PDF or click to select</div>
+                    <div class="upload-subtext">Supported format: PDF (max 10MB)</div>
                     <input type="file" id="fileInput" class="file-input" accept=".pdf">
                     <button class="upload-button" id="uploadButton">
                         <i class="fas fa-upload"></i> Choose File
@@ -645,33 +619,22 @@
                 </div>
 
                 <div class="result-card">
-                    <h3><i class="fas fa-tags"></i> Named Entities</h3>
-                    <div class="entities-grid" id="entitiesGrid"></div>
-                </div>
-
-                <div class="result-card">
                     <h3><i class="fas fa-chart-bar"></i> Document Statistics</h3>
                     <div class="stats-grid" id="statsGrid"></div>
                 </div>
 
                 <div class="result-card">
-                    <h3><i class="fas fa-key"></i> Key Topics & Keywords</h3>
-                    <div class="keywords-grid" id="keywordsGrid"></div>
-                </div>
-
-                <div class="result-card">
-                    <h3><i class="fas fa-heart"></i> Sentiment Analysis</h3>
-                    <div class="sentiment-analysis" id="sentimentAnalysis"></div>
-                </div>
-
-                <div class="result-card">
-                    <h3><i class="fas fa-file-medical"></i> Document Classification</h3>
-                    <div class="document-classification" id="documentClassification"></div>
-                </div>
-
-                <div class="result-card">
-                    <h3><i class="fas fa-book-reader"></i> Readability Analysis</h3>
-                    <div class="readability-analysis" id="readabilityAnalysis"></div>
+                    <h3><i class="fas fa-chart-line"></i> Text Analysis</h3>
+                    <div class="simple-analysis" id="textAnalysis">
+                        <div class="analysis-item">
+                            <span class="analysis-label">Reading Level:</span>
+                            <span class="analysis-value" id="readingLevel">Calculating...</span>
+                        </div>
+                        <div class="analysis-item">
+                            <span class="analysis-label">Document Type:</span>
+                            <span class="analysis-value" id="documentType">Analyzing...</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -926,23 +889,11 @@
             // 1. Display summary
             document.getElementById('summaryText').textContent = data.summary || 'No summary available.';
             
-            // 2. Display entities
-            displayEntities(data.entities || []);
-            
-            // 3. Display statistics
+            // 2. Display statistics
             displayStatistics(data.statistics || {});
             
-            // 4. Display keywords
-            displayKeywords(data.keywords || []);
-            
-            // 5. Display sentiment analysis
-            displaySentiment(data.sentiment || {});
-            
-            // 6. Display document classification
-            displayDocumentClassification(data.document_type || {});
-            
-            // 7. Display readability analysis
-            displayReadability(data.readability || {});
+            // 4. Display simple text analysis
+            displayTextAnalysis(data);
             
             // Show results section
             document.getElementById('resultsSection').style.display = 'block';
@@ -991,118 +942,27 @@
             });
         }
 
-        function displayKeywords(keywords) {
-            const keywordsGrid = document.getElementById('keywordsGrid');
-            keywordsGrid.innerHTML = '';
+        function displayTextAnalysis(data) {
+            // Simple reading level based on statistics
+            const stats = data.statistics || {};
+            const avgWordsPerSentence = stats.avg_words_per_sentence || 0;
+            let readingLevel = "Basic";
+            if (avgWordsPerSentence > 20) readingLevel = "Advanced";
+            else if (avgWordsPerSentence > 15) readingLevel = "Intermediate";
             
-            if (keywords && keywords.length > 0) {
-                keywords.forEach(keyword => {
-                    const keywordTag = document.createElement('div');
-                    keywordTag.className = 'keyword-tag';
-                    keywordTag.innerHTML = `
-                        <span>${keyword.word}</span>
-                        <span class="keyword-score">${keyword.score}%</span>
-                    `;
-                    keywordsGrid.appendChild(keywordTag);
-                });
-            } else {
-                keywordsGrid.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Keywords analysis unavailable - enhanced backend features not deployed yet.</p>';
-            }
+            // Simple document type detection
+            let docType = "Text Document";
+            if (data.summary && data.summary.toLowerCase().includes('research')) docType = "Research Paper";
+            else if (data.summary && data.summary.toLowerCase().includes('report')) docType = "Report";
+            else if (data.summary && data.summary.toLowerCase().includes('article')) docType = "Article";
+            
+            document.getElementById('readingLevel').textContent = readingLevel;
+            document.getElementById('documentType').textContent = docType;
         }
 
-        function displaySentiment(sentiment) {
-            const sentimentDiv = document.getElementById('sentimentAnalysis');
-            
-            if (!sentiment || !sentiment.overall || sentiment.overall === "Analysis unavailable") {
-                sentimentDiv.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Sentiment analysis unavailable - enhanced backend features not deployed yet.</p>';
-                return;
-            }
-            
-            sentimentDiv.innerHTML = `
-                <div class="sentiment-overview">
-                    <div class="sentiment-emoji">${sentiment.emoji}</div>
-                    <div class="sentiment-text">
-                        <div class="sentiment-label">Overall Sentiment: ${sentiment.overall}</div>
-                        <div style="color: var(--text-secondary);">Document tone analysis based on language patterns</div>
-                    </div>
-                </div>
-                <div class="sentiment-bars">
-                    <div class="sentiment-bar">
-                        <span style="width: 80px;">Positive</span>
-                        <div class="sentiment-bar-fill">
-                            <div class="sentiment-bar-progress positive-bar" style="width: ${sentiment.scores?.positive || 0}%"></div>
-                        </div>
-                        <span>${sentiment.scores?.positive || 0}%</span>
-                    </div>
-                    <div class="sentiment-bar">
-                        <span style="width: 80px;">Negative</span>
-                        <div class="sentiment-bar-fill">
-                            <div class="sentiment-bar-progress negative-bar" style="width: ${sentiment.scores?.negative || 0}%"></div>
-                        </div>
-                        <span>${sentiment.scores?.negative || 0}%</span>
-                    </div>
-                    <div class="sentiment-bar">
-                        <span style="width: 80px;">Neutral</span>
-                        <div class="sentiment-bar-fill">
-                            <div class="sentiment-bar-progress neutral-bar" style="width: ${sentiment.scores?.neutral || 0}%"></div>
-                        </div>
-                        <span>${sentiment.scores?.neutral || 0}%</span>
-                    </div>
-                </div>
-            `;
-        }
 
-        function displayDocumentClassification(docType) {
-            const classificationDiv = document.getElementById('documentClassification');
-            
-            if (!docType.type) {
-                classificationDiv.innerHTML = '<p>Document classification unavailable.</p>';
-                return;
-            }
-            
-            classificationDiv.innerHTML = `
-                <div class="doc-classification">
-                    <div class="doc-type">${docType.type}</div>
-                    <div class="doc-confidence">Confidence: ${docType.confidence}%</div>
-                    <div style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
-                        Classified based on content patterns and language structure
-                    </div>
-                </div>
-            `;
-        }
 
-        function displayReadability(readability) {
-            const readabilityDiv = document.getElementById('readabilityAnalysis');
-            
-            if (!readability || !readability.flesch_reading_ease || readability.flesch_reading_ease === 0) {
-                readabilityDiv.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Readability analysis unavailable - enhanced backend features not deployed yet.</p>';
-                return;
-            }
-            
-            readabilityDiv.innerHTML = `
-                <div class="readability-grid">
-                    <div class="readability-metric">
-                        <div class="metric-score">${readability.flesch_reading_ease}</div>
-                        <div class="metric-name">Flesch Reading Ease</div>
-                    </div>
-                    <div class="readability-metric">
-                        <div class="metric-score">${readability.flesch_kincaid_grade}</div>
-                        <div class="metric-name">Grade Level</div>
-                    </div>
-                    <div class="readability-metric">
-                        <div class="metric-score">${readability.gunning_fog}</div>
-                        <div class="metric-name">Gunning Fog Index</div>
-                    </div>
-                    <div class="readability-metric">
-                        <div class="metric-score">${readability.automated_readability}</div>
-                        <div class="metric-name">ARI Score</div>
-                    </div>
-                    <div class="reading-level">
-                        📚 Reading Level: ${readability.reading_level}
-                    </div>
-                </div>
-            `;
-        }
+
 
         function downloadResults() {
             if (!currentResults) return;
