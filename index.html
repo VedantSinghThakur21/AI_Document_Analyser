@@ -995,7 +995,7 @@
             const keywordsGrid = document.getElementById('keywordsGrid');
             keywordsGrid.innerHTML = '';
             
-            if (keywords.length > 0) {
+            if (keywords && keywords.length > 0) {
                 keywords.forEach(keyword => {
                     const keywordTag = document.createElement('div');
                     keywordTag.className = 'keyword-tag';
@@ -1006,15 +1006,15 @@
                     keywordsGrid.appendChild(keywordTag);
                 });
             } else {
-                keywordsGrid.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No keywords found.</p>';
+                keywordsGrid.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Keywords analysis unavailable - enhanced backend features not deployed yet.</p>';
             }
         }
 
         function displaySentiment(sentiment) {
             const sentimentDiv = document.getElementById('sentimentAnalysis');
             
-            if (!sentiment.overall) {
-                sentimentDiv.innerHTML = '<p>Sentiment analysis unavailable.</p>';
+            if (!sentiment || !sentiment.overall || sentiment.overall === "Analysis unavailable") {
+                sentimentDiv.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Sentiment analysis unavailable - enhanced backend features not deployed yet.</p>';
                 return;
             }
             
@@ -1074,8 +1074,8 @@
         function displayReadability(readability) {
             const readabilityDiv = document.getElementById('readabilityAnalysis');
             
-            if (!readability.flesch_reading_ease) {
-                readabilityDiv.innerHTML = '<p>Readability analysis unavailable.</p>';
+            if (!readability || !readability.flesch_reading_ease || readability.flesch_reading_ease === 0) {
+                readabilityDiv.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Readability analysis unavailable - enhanced backend features not deployed yet.</p>';
                 return;
             }
             

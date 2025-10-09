@@ -137,11 +137,13 @@ def analyze_sentiment(text: str) -> Dict:
                 "compound": round(scores['compound'], 3)
             }
         }
-    except:
+    except Exception as e:
+        logger.error(f"Error analyzing sentiment: {str(e)}")
         return {
-            "overall": "Unknown",
+            "overall": "Analysis unavailable",
             "emoji": "❓",
-            "scores": {"positive": 0, "negative": 0, "neutral": 100, "compound": 0}
+            "scores": {"positive": 0, "negative": 0, "neutral": 0, "compound": 0},
+            "error": str(e)
         }
 
 def classify_document_type(text: str) -> Dict:
@@ -184,11 +186,11 @@ def classify_document_type(text: str) -> Dict:
         scores[doc_type] = matches
     
     if max(scores.values()) > 0:
-        predicted_type = max(scores, key=scores.get)
+        predicted_type = max(scores.keys(), key=lambda x: scores[x])
         confidence = scores[predicted_type] / len(patterns[predicted_type]) * 100
     else:
         predicted_type = "General Document"
-        confidence = 50
+        confidence = 0
     
     return {
         "type": predicted_type,
@@ -201,22 +203,34 @@ def get_readability_metrics(text: str) -> Dict:
     Get comprehensive readability metrics.
     """
     try:
+        # Ensure we have enough text for meaningful analysis
+        if len(text.strip()) < 50:
+            return {
+                "flesch_reading_ease": 0.0,
+                "flesch_kincaid_grade": 0.0,
+                "gunning_fog": 0.0,
+                "automated_readability": 0.0,
+                "coleman_liau": 0.0,
+                "reading_level": "Text too short for analysis"
+            }
+        
         return {
             "flesch_reading_ease": round(textstat.flesch_reading_ease(text), 1),
-            "flesch_kincaid_grade": round(textstat.flesch_kincaid().flesch_kincaid(text), 1),
+            "flesch_kincaid_grade": round(textstat.flesch_kincaid_grade(text), 1),
             "gunning_fog": round(textstat.gunning_fog(text), 1),
             "automated_readability": round(textstat.automated_readability_index(text), 1),
             "coleman_liau": round(textstat.coleman_liau_index(text), 1),
             "reading_level": textstat.text_standard(text)
         }
-    except:
+    except Exception as e:
+        logger.error(f"Error calculating readability metrics: {str(e)}")
         return {
-            "flesch_reading_ease": 50.0,
-            "flesch_kincaid_grade": 10.0,
-            "gunning_fog": 12.0,
-            "automated_readability": 10.0,
-            "coleman_liau": 10.0,
-            "reading_level": "10th to 12th grade"
+            "flesch_reading_ease": 0.0,
+            "flesch_kincaid_grade": 0.0,
+            "gunning_fog": 0.0,
+            "automated_readability": 0.0,
+            "coleman_liau": 0.0,
+            "reading_level": f"Analysis error: {str(e)}"
         }
 
 def analyze_text(text: str) -> dict:
