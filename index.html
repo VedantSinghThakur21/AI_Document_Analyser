@@ -1193,11 +1193,43 @@
             // 2. Display statistics
             displayStatistics(data.statistics || {});
             
-            // 4. Display simple text analysis
+            // 3. Display S3 storage status if available
+            displayStorageInfo(data.storage);
+            
+            // 4. Display comprehensive analysis
             displayTextAnalysis(data);
             
             // Show results section
             document.getElementById('resultsSection').style.display = 'block';
+        }
+
+        function displayStorageInfo(storage) {
+            if (!storage) return;
+            
+            // Create storage info banner if files were uploaded
+            if (storage.pdf_uploaded || storage.results_uploaded) {
+                const storageInfo = document.createElement('div');
+                storageInfo.className = 'storage-info';
+                storageInfo.innerHTML = `
+                    <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 12px; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem;">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <strong>Files Saved to AWS S3:</strong>
+                        ${storage.pdf_uploaded ? '📄 PDF Document' : ''}
+                        ${storage.pdf_uploaded && storage.results_uploaded ? ' & ' : ''}
+                        ${storage.results_uploaded ? '📊 Analysis Results' : ''}
+                        <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 4px;">
+                            Securely stored in your AWS Free Tier bucket
+                        </div>
+                    </div>
+                `;
+                
+                // Insert before results
+                const resultsSection = document.getElementById('resultsSection');
+                const firstCard = resultsSection.querySelector('.result-card');
+                if (firstCard) {
+                    resultsSection.insertBefore(storageInfo, firstCard);
+                }
+            }
         }
 
 
