@@ -12,6 +12,14 @@ echo "SNS Topic: ${TOPIC_ARN}"
 echo "Subscribe your email to SNS (one-time):"
 echo "aws sns subscribe --topic-arn ${TOPIC_ARN} --protocol email --notification-endpoint you@example.com --region ${REGION}"
 
+# Get EC2 instance ID
+INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+if [ -z "$INSTANCE_ID" ]; then
+  echo "❌ Could not get EC2 instance ID. Are you running this on an EC2 instance?"
+  exit 1
+fi
+echo "Instance ID: $INSTANCE_ID"
+
 # Alarm 1: High CPU (>80% for 5 minutes)
 aws cloudwatch put-metric-alarm \
   --alarm-name "DocAnalyzer-HighCPU" \
@@ -21,7 +29,7 @@ aws cloudwatch put-metric-alarm \
   --period 60 \
   --threshold 80 \
   --comparison-operator GreaterThanThreshold \
-  --dimensions Name=InstanceId,Value=$(curl -s http://169.254.169.254/latest/meta-data/instance-id) \
+  --dimensions Name=InstanceId,Value=$INSTANCE_ID \
   --evaluation-periods 5 \
   --alarm-actions ${TOPIC_ARN} \
   --ok-actions ${TOPIC_ARN} \
@@ -36,7 +44,7 @@ aws cloudwatch put-metric-alarm \
   --period 60 \
   --threshold 90 \
   --comparison-operator GreaterThanThreshold \
-  --dimensions Name=InstanceId,Value=$(curl -s http://169.254.169.254/latest/meta-data/instance-id),Name=path,Value=/,Name=ImageId,Value=*,Name=device,Value=*,Name=fstype,Value=* \
+  --dimensions Name=InstanceId,Value=$INSTANCE_ID,Name=path,Value=/,Name=ImageId,Value=*,Name=device,Value=*,Name=fstype,Value=* \
   --evaluation-periods 5 \
   --alarm-actions ${TOPIC_ARN} \
   --ok-actions ${TOPIC_ARN} \
