@@ -17,8 +17,7 @@
         {
             "Effect": "Allow",
             "Action": [
-                "s3:ListBucket",
-                "s3:HeadBucket"
+                "s3:ListBucket"
             ],
             "Resource": "arn:aws:s3:::my-doc-analyzer-bucket-939404560"
         }

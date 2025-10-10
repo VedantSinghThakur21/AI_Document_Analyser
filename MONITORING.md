@@ -21,7 +21,7 @@ Ensure your EC2 instance role includes permissions for:
 Attach managed policy:
 ```bash
 aws iam attach-role-policy \
-  --role-name EC2-DocumentAnalyzer-S3-Role \
+  --role-name EC2S3ICC \
   --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
 ```
 
