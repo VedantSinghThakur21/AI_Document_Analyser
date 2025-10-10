@@ -63,7 +63,7 @@ aws cloudwatch put-metric-alarm \
   --period 60 \
   --threshold 90 \
   --comparison-operator GreaterThanThreshold \
-  --dimensions Name=InstanceId,Value=$INSTANCE_ID,Name=path,Value=/,Name=ImageId,Value=*,Name=device,Value=*,Name=fstype,Value=* \
+  --dimensions Name=InstanceId,Value=$INSTANCE_ID Name=path,Value=/ Name=device,Value=/dev/xvda1 Name=fstype,Value=xfs \
   --evaluation-periods 5 \
   --alarm-actions ${TOPIC_ARN} \
   --ok-actions ${TOPIC_ARN} \
